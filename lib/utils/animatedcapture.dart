@@ -198,7 +198,7 @@ class _AnimatedIconButtonState extends State<AnimatedIconButton>
             final capImgPath = capturedImage!.path;
             Future.delayed(const Duration(milliseconds: 300), () {
               //Navigator.of(context).push(MaterialPageRoute(builder: (_) => ImageScreen(imgPath: capImgPath)));
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) => ImageScreen(img: File(capturedImage.path))));
+              Navigator.of(context).push(MaterialPageRoute(builder: (_) => ImageScreen(img: File(capturedImage.path), isGallery: false)));
             });
           }
         },

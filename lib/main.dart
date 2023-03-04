@@ -2,12 +2,19 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:readaloud_v2/utils/animatedcapture.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+    [
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]
+  );
   final cameras = await availableCameras();
   final rearCam = cameras.first;
   runApp(MyApp(camera: rearCam));
@@ -153,7 +160,7 @@ class _InitAppState extends State<InitApp> {
                 },
                 onScaleStart: (details) {},
                 onScaleUpdate: _onZoom,
-                child: PreviewScreen(controller: _controller)
+                child: PreviewScreen(controller: _controller, zoomLevel: _zoomLevel)
             );
           } else {
             return const Center(child: CircularProgressIndicator());
@@ -166,8 +173,9 @@ class _InitAppState extends State<InitApp> {
 
 class PreviewScreen extends StatefulWidget {
   final CameraController controller;
+  final double zoomLevel;
 
-  const PreviewScreen({Key? key, required this.controller}) : super(key: key);
+  const PreviewScreen({Key? key, required this.controller, required this.zoomLevel}) : super(key: key);
 
   @override
   State<PreviewScreen> createState() => _PreviewScreenState();
@@ -176,7 +184,10 @@ class PreviewScreen extends StatefulWidget {
 class _PreviewScreenState extends State<PreviewScreen> {
 
   bool flashOn = false;
-  double value = 50;
+  //double value = 50;
+
+  double _minExposureOffset = -2.0, _maxExposureOffset = 2.0;
+  late double _currentExposureOffset = 0.0;
 
   void toggleFlash()
   {
@@ -214,6 +225,66 @@ class _PreviewScreenState extends State<PreviewScreen> {
               ),
           ),
         ),
+
+        Container(
+          color: Colors.transparent,
+          height: height / 10,
+          margin: EdgeInsets.only(bottom: 100.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+
+                  Icon(Icons.wb_sunny_outlined, size: 20, color: Colors.white),
+
+                  SliderTheme(
+                    data: SliderThemeData(
+                      trackHeight: 5,
+                      inactiveTrackColor: Colors.white.withOpacity(0.2),
+                      activeTrackColor: Colors.white,
+                      thumbColor: Colors.white,
+                      minThumbSeparation: 10,
+                      inactiveTickMarkColor: Colors.white.withOpacity(0.3),
+                      thumbShape: RoundSliderThumbShape(pressedElevation: 0, enabledThumbRadius: 3, elevation: 0),
+                    ),
+                    child: Slider(
+                      min: _minExposureOffset,
+                      max: _maxExposureOffset,
+                      value: _currentExposureOffset, 
+                      divisions: 16,
+                      onChanged: (_currentExposureOffset) {
+                        setState(() {
+                          this._currentExposureOffset = _currentExposureOffset;
+                          print(_currentExposureOffset.toStringAsFixed(2));
+                          widget.controller.setExposureOffset(_currentExposureOffset);
+                        });
+                      },
+                    ),
+                  ),
+
+                  Text(_currentExposureOffset >= 0 ? "+ ${_currentExposureOffset.toStringAsFixed(2)}" : "- ${_currentExposureOffset.abs().toStringAsFixed(2)}", style: TextStyle(color: Colors.white, fontSize: 15.0)),
+
+                ],
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.zoom_in, color: Colors.white, size: 18.0),
+                  SizedBox(width: 5.0),
+                  Text("${widget.zoomLevel.toStringAsFixed(2)}x", style: TextStyle(fontSize: 13.0, color: Colors.white)),
+                ],
+              ),
+
+            ],
+          ),
+        ),
+
         Container(
           alignment: Alignment.bottomCenter,
           height: height / 9,
@@ -238,7 +309,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                         onPressed: () async {
                           final img = await ImagePicker().pickImage(source: ImageSource.gallery);
                           if (img != null) {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (_) => ImageScreen(img: File(img.path))));
+                            Navigator.of(context).push(MaterialPageRoute(builder: (_) => ImageScreen(img: File(img.path), isGallery: true)));
                           }
                         },
                         icon: Image.asset('assets/icons/gallery.png', scale: 5.5, color: Colors.white),
@@ -307,7 +378,8 @@ class _PreviewScreenState extends State<PreviewScreen> {
 class ImageScreen extends StatefulWidget {
   //final String imgPath;
   final File img;
-  const ImageScreen({Key? key, required this.img}) : super(key: key);
+  final bool isGallery;
+  const ImageScreen({Key? key, required this.img, required this.isGallery}) : super(key: key);
 
   @override
   State<ImageScreen> createState() => _ImageScreenState();
@@ -347,15 +419,19 @@ class _ImageScreenState extends State<ImageScreen> {
           CropAspectRatioPreset.ratio5x3,
           CropAspectRatioPreset.ratio5x4,
           CropAspectRatioPreset.ratio7x5,
-          CropAspectRatioPreset.ratio16x9
+          CropAspectRatioPreset.ratio16x9,
         ],
         uiSettings: [
           AndroidUiSettings(
-            toolbarTitle: 'Crop Image',
-            toolbarColor: Colors.blue,
+            toolbarTitle: 'Select Regions',
+            
+            toolbarColor: Colors.black,
             toolbarWidgetColor: Colors.white,
+            cropFrameColor: Colors.red,
+            activeControlsWidgetColor: Colors.teal,
             initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: true,
+            lockAspectRatio: false,
+            dimmedLayerColor: Colors.black45,
           )
         ]
 
@@ -404,7 +480,7 @@ class _ImageScreenState extends State<ImageScreen> {
               Container(
                 color: Colors.black,
                 height: height - (height / 9),
-                child: Image.file(imgShow, fit: BoxFit.fill),
+                child: Image.file(imgShow, fit: regions.contains(imgShow) || widget.isGallery ?  BoxFit.contain : BoxFit.fill),
               ),
 
               Container(
@@ -433,7 +509,7 @@ class _ImageScreenState extends State<ImageScreen> {
           Container(
             height: 80,
             child: Center(
-              child: ListView.builder(
+              child: regions.length != 0 ? ListView.builder(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
                 padding: EdgeInsets.symmetric(vertical: 15),
@@ -447,16 +523,16 @@ class _ImageScreenState extends State<ImageScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Column(
                           children: [
-                            Icon(Icons.aspect_ratio_outlined, size: 30.0, color: Colors.white),
+                            Icon(Icons.aspect_ratio_outlined, size: 30.0, color: Colors.white.withOpacity(0.7)),
                             SizedBox(height: 0),
-                            Text("R$index", style: TextStyle(fontSize: 12.0, color: Colors.white)),
+                            Text("R$index", style: TextStyle(fontSize: 12.0, color: Colors.white.withOpacity(0.3))),
                           ],
                         ),
                       ),
                     ),
                   );
                 },
-              ),
+              ) : Text("SELECTED REGIONS APPEAR HERE", style: TextStyle(fontSize: 14.0, color: Colors.white.withOpacity(0.3))),
             ),
           )
         ],
