@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:readaloud_v2/utils/animatedcapture.dart';
@@ -389,15 +390,28 @@ class _ImageScreenState extends State<ImageScreen> {
 
   late File imgShow;
 
+  // array of regions
   List<File> regions = [];
+  // array of strings from regions
+  List<String> stringFromRegion = [];
+
+  // list detection language
+  List<String> langs = ["Latin", "Devanagari", "Japanese", "Korean"];
+
+  // current detection language
+  late String currLang;
+  int currLangIndex = 0;
 
   @override
   void initState()
   {
     super.initState();
     imgShow = widget.img;
+    currLang = langs[0];
+    regions.add(imgShow);
   }
 
+  // get partitions of base image [region-wise split]
   Future<void> _selectRegion() async
   {
     final croppedImg = await ImageCropper().cropImage(
@@ -440,13 +454,65 @@ class _ImageScreenState extends State<ImageScreen> {
     if (croppedImg != null)
     {
         setState(() {
-          regions.add(File(croppedImg.path));
+          if (regions[0] == widget.img) {
+            regions[0] = File(croppedImg.path);
+          }
+          else {
+            regions.add(File(croppedImg.path));
+          }
           imgShow = File(croppedImg.path);
         });
         print("Region Added");
     }
+  }
 
+  void getTextFromImage(File image) async
+  {
 
+    TextRecognitionScript lang;
+    print(currLang);
+    if (currLang == "Latin")  lang = TextRecognitionScript.latin;
+    else if (currLang == "Devanagari")  lang = TextRecognitionScript.devanagiri;
+    else if (currLang == "Japanese")  lang = TextRecognitionScript.japanese;
+    else if (currLang == "Korean")  lang = TextRecognitionScript.korean;
+    else lang = TextRecognitionScript.latin;
+
+    // main logic
+    var inputImg = InputImage.fromFile(image);
+    var textDetector = GoogleMlKit.vision.textRecognizer(script: lang);
+    RecognizedText recog_string = await textDetector.processImage(inputImg);
+    await textDetector.close();
+
+    String scannedText = "";
+    for (TextBlock block in recog_string.blocks)
+    {
+      for (TextLine line in block.lines)
+      {
+        scannedText = "$scannedText${line.text}\n";
+      }
+    }
+
+    setState(() {
+      if (stringFromRegion.length > regions.length) {
+        stringFromRegion.clear();
+        stringFromRegion[0] = scannedText;
+      } else {
+        stringFromRegion.add(scannedText);
+      }
+    });
+  }
+
+  String generateDisplayText()
+  {
+    String outString = "";
+    for (int i=0; i<regions.length; i++)
+    {
+      getTextFromImage(regions[i]);
+      outString += stringFromRegion[i];
+    }
+    print("length of regions: " + regions.length.toString());
+    print("length of stringregions: " + stringFromRegion.length.toString());
+    return outString;
   }
 
   @override
@@ -489,17 +555,78 @@ class _ImageScreenState extends State<ImageScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    ElevatedButton.icon(
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromRGBO(212, 182, 9, 0.903),
+                        shape: const CircleBorder(),
+                        padding: EdgeInsets.all(12.0),
+                      ),
                       onPressed: _selectRegion,
-                      icon: Icon(Icons.crop),
-                      label: Text("Get Regions"),
+                      child: Icon(Icons.crop),
+                      //label: Text("Get Regions"),
                     ),
+                    
                     SizedBox(width: 20),
-                    ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: Icon(Icons.sort_by_alpha),
-                        label: Text("Recognize")
-                    )
+
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color.fromRGBO(212, 182, 9, 0.903),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(30))),
+                          padding: EdgeInsets.all(12.0),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if (currLangIndex < 3) {
+                              currLangIndex += 1;
+                            } else {
+                              currLangIndex = 0;
+                            }
+                            currLang = langs[currLangIndex];
+                          });
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Icons.translate),
+                            SizedBox(width: 10.0),
+                            Text(currLang),
+                          ],
+                        ),
+                    ),
+
+                    SizedBox(width: 20),
+
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color.fromRGBO(212, 182, 9, 0.903),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(30))),
+                          padding: EdgeInsets.all(12.0),
+                        ),
+                        onPressed: () {
+
+                          String outputString = generateDisplayText();
+
+                          showModalBottomSheet(
+                            context: context,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+                            ),
+                            isScrollControlled: true,
+                            builder: (context) => outputModal(outputString),
+                          ); 
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Icons.sort_by_alpha),
+                            SizedBox(width: 10.0),
+                            Text("Detect"),
+                          ],
+                        ),
+                    ),
+                    
                   ],
                 ),
               ),
@@ -509,7 +636,7 @@ class _ImageScreenState extends State<ImageScreen> {
           Container(
             height: 80,
             child: Center(
-              child: regions.length != 0 ? ListView.builder(
+              child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
                 padding: EdgeInsets.symmetric(vertical: 15),
@@ -532,11 +659,32 @@ class _ImageScreenState extends State<ImageScreen> {
                     ),
                   );
                 },
-              ) : Text("SELECTED REGIONS APPEAR HERE", style: TextStyle(fontSize: 14.0, color: Colors.white.withOpacity(0.3))),
+              )
             ),
           )
         ],
       ),
     );
   }
+
+  Widget outputModal(String outputString) => Container(
+    padding: EdgeInsets.only(top: 20, bottom: 30, left: 20, right: 20),
+    decoration: BoxDecoration(
+      color: Color.fromRGBO(20, 20, 20, 1),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+    ),
+    child: SingleChildScrollView(
+      child: DefaultTextStyle(
+        style: TextStyle(color: Colors.white, fontSize: 18.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(outputString.isEmpty ? "No Text Detected" : outputString),
+          ],
+        ),
+      ),
+    ),
+  );
+
 }

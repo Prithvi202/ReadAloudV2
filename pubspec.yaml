@@ -43,6 +43,8 @@ dependencies:
   audioplayers: ^3.0.1
   image_cropper: ^3.0.1
 
+  google_ml_kit: ^0.13.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
