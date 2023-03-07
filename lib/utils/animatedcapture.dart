@@ -98,6 +98,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:readaloud_v2/main.dart';
 
+
 class AnimatedIconButton extends StatefulWidget {
   final String firstImage;
   final String secondImage;
@@ -106,6 +107,11 @@ class AnimatedIconButton extends StatefulWidget {
   final double scale;
   final String audio;
   final CameraController? cameraController;
+  final VoidCallback customMethod;
+
+
+  // added so that we can have empty function as default value;
+  static void _blankFunc() {}
 
   AnimatedIconButton({
     Key? key,
@@ -113,6 +119,7 @@ class AnimatedIconButton extends StatefulWidget {
     required this.secondImage,
     required this.duration,
     required this.color,
+    this.customMethod = _blankFunc,
     this.scale = 2.5,
     this.audio = "",
     this.cameraController,
@@ -196,6 +203,9 @@ class _AnimatedIconButtonState extends State<AnimatedIconButton>
           {
             final capturedImage = await widget.cameraController?.takePicture();
             final capImgPath = capturedImage!.path;
+            
+            widget.customMethod();
+            
             Future.delayed(const Duration(milliseconds: 300), () {
               //Navigator.of(context).push(MaterialPageRoute(builder: (_) => ImageScreen(imgPath: capImgPath)));
               Navigator.of(context).push(MaterialPageRoute(builder: (_) => ImageScreen(img: File(capturedImage.path), isGallery: false)));

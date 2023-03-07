@@ -325,6 +325,14 @@ class _PreviewScreenState extends State<PreviewScreen> {
                       audio: 'audio/capture_click.mp3',
                       cameraController: widget.controller,
                       scale: 3.5,
+                      customMethod: () {
+                        // this function is called within a setState function anyways
+                        setState(() {
+                          widget.controller.setFlashMode(FlashMode.off);
+                          flashOn = !flashOn;
+                        });
+                        
+                      },
                     ),
 
 
@@ -494,6 +502,7 @@ class _ImageScreenState extends State<ImageScreen> {
 
     return scannedText;
 
+    /*
     setState(() {
       if (stringFromRegion.length > regions.length) {
         stringFromRegion.clear();
@@ -502,6 +511,8 @@ class _ImageScreenState extends State<ImageScreen> {
         stringFromRegion.add(scannedText);
       }
     });
+    */
+
   }
 
 /*
@@ -556,7 +567,7 @@ class _ImageScreenState extends State<ImageScreen> {
               Container(
                 color: Colors.black,
                 height: height - (height / 9),
-                child: Image.file(imgShow, fit: regions.contains(imgShow) || widget.isGallery ?  BoxFit.contain : BoxFit.fill),
+                child: Image.file(imgShow, fit: imgShow != widget.img ?  BoxFit.contain : BoxFit.fill),
               ),
 
               Container(
@@ -709,13 +720,11 @@ class _ImageScreenState extends State<ImageScreen> {
   Widget outputModal(String outputString) {
     final controller = TextEditingController(text: outputString);
 
-    return SingleChildScrollView(
-      child: AnimatedPadding(
-        duration: Duration(milliseconds: 10),
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        curve: Curves.easeInOut,
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: SingleChildScrollView(
         child: Container(
-          height: 200,
+          height: 300,
           padding: EdgeInsets.only(top: 20, bottom: 30, left: 20, right: 20),
           decoration: BoxDecoration(
             color: Color.fromRGBO(20, 20, 20, 1),
@@ -728,18 +737,94 @@ class _ImageScreenState extends State<ImageScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  TextField(
-                    controller: controller,
-                    onChanged: (value) {
-                      outputString = value;
-                    },
-                    style: TextStyle(color: Colors.white),
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: '',
-                    ),
+    
+                  Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 3,
+                          backgroundColor: Colors.black,
+                          padding: const EdgeInsets.all(15),
+                          shadowColor: const Color.fromRGBO(255, 189, 66, 1),
+                          shape: const CircleBorder(
+                            side: BorderSide(
+                                width: 1.8,
+                                color: Color.fromRGBO(255, 189, 66, 0.3)),
+                          ),
+                        ),
+                        onPressed: () {
+    
+                          //isSpeaking ? stop() : speak(scannedText);
+                        
+                        },
+                        child: const Icon(Icons.transcribe_outlined,
+                            color: Color.fromRGBO(255, 189, 66, 1), size: 30.0),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 3,
+                          backgroundColor: Colors.black,
+                          padding: const EdgeInsets.all(15),
+                          shadowColor: const Color.fromRGBO(255, 189, 66, 1),
+                          shape: const CircleBorder(
+                            side: BorderSide(
+                                width: 1.8,
+                                color: Color.fromRGBO(255, 189, 66, 0.3)),
+                          ),
+                        ),
+                        onPressed: () => {
+                          /*
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TranslatePage(scannedText: scannedText),
+                            ),
+                          )
+                          */
+                        },
+                        child: const Icon(Icons.translate,
+                            color: Color.fromRGBO(255, 189, 66, 1), size: 30.0),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 3,
+                          backgroundColor: Colors.black,
+                          padding: const EdgeInsets.all(15),
+                          shadowColor: const Color.fromRGBO(255, 189, 66, 1),
+                          shape: const CircleBorder(
+                            side: BorderSide(
+                                width: 1.8,
+                                color: Color.fromRGBO(255, 189, 66, 0.3)),
+                          ),
+                        ),
+                        onPressed: () => {},
+                        child: const Icon(Icons.text_snippet_outlined,
+                            color: Color.fromRGBO(255, 189, 66, 1), size: 30.0),
+                      ),
+                    ],
                   ),
+    
+                  // sizedbox for UI design
+                  SizedBox(height: 30.0),
+    
+                  // for text below..
+                  outputString.isNotEmpty ? SizedBox(
+                    width: 230,
+                    child: TextField(
+                      controller: controller,
+                      onChanged: (value) {
+                        outputString = value;
+                      },
+                      style: TextStyle(color: Colors.white),
+                      maxLines: null,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: '',
+                      ),
+                    ),
+                  ) : Text("No text detected"),
                 ],
               ),
             ),
