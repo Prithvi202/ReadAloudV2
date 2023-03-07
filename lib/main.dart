@@ -466,7 +466,7 @@ class _ImageScreenState extends State<ImageScreen> {
     }
   }
 
-  void getTextFromImage(File image) async
+  Future<String> getTextFromImage(File image) async
   {
 
     TextRecognitionScript lang;
@@ -492,6 +492,8 @@ class _ImageScreenState extends State<ImageScreen> {
       }
     }
 
+    return scannedText;
+
     setState(() {
       if (stringFromRegion.length > regions.length) {
         stringFromRegion.clear();
@@ -502,18 +504,25 @@ class _ImageScreenState extends State<ImageScreen> {
     });
   }
 
+/*
   String generateDisplayText()
   {
     String outString = "";
     for (int i=0; i<regions.length; i++)
     {
       getTextFromImage(regions[i]);
-      outString += stringFromRegion[i];
     }
+
+    for (int x=0; x<stringFromRegion.length; x++)
+    {
+      outString += stringFromRegion[x];
+    }
+    
     print("length of regions: " + regions.length.toString());
     print("length of stringregions: " + stringFromRegion.length.toString());
     return outString;
   }
+*/
 
   @override
   Widget build(BuildContext context) {
@@ -522,6 +531,7 @@ class _ImageScreenState extends State<ImageScreen> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
       appBar: AppBar(
         title: Text("Preview Screen", style: TextStyle(color: Colors.white)),
@@ -603,9 +613,13 @@ class _ImageScreenState extends State<ImageScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(30))),
                           padding: EdgeInsets.all(12.0),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
 
-                          String outputString = generateDisplayText();
+                          String outputString = "";
+                          for (int i=0; i<regions.length; i++)
+                          {
+                            outputString += await getTextFromImage(regions[i]);
+                          }
 
                           showModalBottomSheet(
                             context: context,
@@ -667,7 +681,9 @@ class _ImageScreenState extends State<ImageScreen> {
     );
   }
 
+  /*
   Widget outputModal(String outputString) => Container(
+    height: 200,
     padding: EdgeInsets.only(top: 20, bottom: 30, left: 20, right: 20),
     decoration: BoxDecoration(
       color: Color.fromRGBO(20, 20, 20, 1),
@@ -680,11 +696,57 @@ class _ImageScreenState extends State<ImageScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(outputString.isEmpty ? "No Text Detected" : outputString),
+            //Text(outputString.isEmpty ? "No Text Detected" : outputString),
+            TextField()
           ],
         ),
       ),
     ),
   );
+  */
+
+  
+  Widget outputModal(String outputString) {
+    final controller = TextEditingController(text: outputString);
+
+    return SingleChildScrollView(
+      child: AnimatedPadding(
+        duration: Duration(milliseconds: 10),
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        curve: Curves.easeInOut,
+        child: Container(
+          height: 200,
+          padding: EdgeInsets.only(top: 20, bottom: 30, left: 20, right: 20),
+          decoration: BoxDecoration(
+            color: Color.fromRGBO(20, 20, 20, 1),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+          ),
+          child: SingleChildScrollView(
+            child: DefaultTextStyle(
+              style: TextStyle(color: Colors.white, fontSize: 18.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextField(
+                    controller: controller,
+                    onChanged: (value) {
+                      outputString = value;
+                    },
+                    style: TextStyle(color: Colors.white),
+                    maxLines: null,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: '',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
 }
