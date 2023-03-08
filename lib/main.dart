@@ -329,7 +329,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                         // this function is called within a setState function anyways
                         setState(() {
                           widget.controller.setFlashMode(FlashMode.off);
-                          flashOn = !flashOn;
+                          if (flashOn) flashOn = !flashOn;
                         });
                         
                       },
@@ -578,12 +578,20 @@ class _ImageScreenState extends State<ImageScreen> {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromRGBO(212, 182, 9, 0.903),
-                        shape: const CircleBorder(),
-                        padding: EdgeInsets.all(12.0),
+                        elevation: 12.0,
+                        backgroundColor: Colors.black,
+                        shadowColor: const Color.fromRGBO(255, 189, 66, 1),
+                        //backgroundColor: Color.fromRGBO(212, 182, 9, 0.903),
+                        shape: const CircleBorder(
+                          side: BorderSide(
+                            width: 2.0, 
+                            color: Color.fromRGBO(255, 189, 66, 0.358)
+                          )
+                        ),
+                        padding: EdgeInsets.all(15.0),
                       ),
                       onPressed: _selectRegion,
-                      child: Icon(Icons.crop),
+                      child: Icon(Icons.crop, color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
                       //label: Text("Get Regions"),
                     ),
                     
@@ -591,9 +599,15 @@ class _ImageScreenState extends State<ImageScreen> {
 
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromRGBO(212, 182, 9, 0.903),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(30))),
-                          padding: EdgeInsets.all(12.0),
+                          //backgroundColor: Color.fromRGBO(212, 182, 9, 0.903),
+                          elevation: 12.0,
+                          backgroundColor: Colors.black,
+                          shadowColor: Color.fromRGBO(255, 189, 66, 1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            side: BorderSide(width: 2.0, color: Color.fromRGBO(255, 189, 66, 0.358)),
+                          ),
+                          padding: EdgeInsets.all(15.0),
                         ),
                         onPressed: () {
                           setState(() {
@@ -609,9 +623,9 @@ class _ImageScreenState extends State<ImageScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(Icons.translate),
+                            Icon(Icons.translate, color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
                             SizedBox(width: 10.0),
-                            Text(currLang),
+                            Text(currLang, style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)),
                           ],
                         ),
                     ),
@@ -620,9 +634,14 @@ class _ImageScreenState extends State<ImageScreen> {
 
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromRGBO(212, 182, 9, 0.903),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(30))),
-                          padding: EdgeInsets.all(12.0),
+                          elevation: 12.0,
+                          backgroundColor: Colors.black,
+                          shadowColor: Color.fromRGBO(255, 189, 66, 1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            side: BorderSide(width: 2.0, color: Color.fromRGBO(255, 189, 66, 0.358)),
+                          ),
+                          padding: EdgeInsets.all(15.0),
                         ),
                         onPressed: () async {
 
@@ -645,9 +664,9 @@ class _ImageScreenState extends State<ImageScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(Icons.sort_by_alpha),
+                            Icon(Icons.sort_by_alpha, color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
                             SizedBox(width: 10.0),
-                            Text("Detect"),
+                            Text("Detect", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)),
                           ],
                         ),
                     ),
@@ -718,116 +737,176 @@ class _ImageScreenState extends State<ImageScreen> {
 
   
   Widget outputModal(String outputString) {
-    final controller = TextEditingController(text: outputString);
+    TextEditingController controller = TextEditingController();
+    ScrollController _scrollController = ScrollController();
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: SingleChildScrollView(
-        child: Container(
-          height: 300,
-          padding: EdgeInsets.only(top: 20, bottom: 30, left: 20, right: 20),
-          decoration: BoxDecoration(
-            color: Color.fromRGBO(20, 20, 20, 1),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
-          ),
-          child: SingleChildScrollView(
-            child: DefaultTextStyle(
-              style: TextStyle(color: Colors.white, fontSize: 18.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+      child: Container(
+        height: 400,
+        padding: EdgeInsets.only(top: 20, bottom: 20, left: 20, right: 20),
+        decoration: BoxDecoration(
+          color: Color.fromRGBO(20, 20, 20, 1),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+        ),
+        child: DefaultTextStyle(
+          style: TextStyle(color: Colors.white, fontSize: 18.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
     
-                  Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 3,
-                          backgroundColor: Colors.black,
-                          padding: const EdgeInsets.all(15),
-                          shadowColor: const Color.fromRGBO(255, 189, 66, 1),
-                          shape: const CircleBorder(
-                            side: BorderSide(
-                                width: 1.8,
-                                color: Color.fromRGBO(255, 189, 66, 0.3)),
+            Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+                  PhysicalModel(
+                    elevation: 12.0,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomRight: Radius.circular(5), topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+                    color: Colors.transparent,//const Color.fromRGBO(255, 189, 66, 1),
+                    shadowColor: const Color.fromRGBO(255, 189, 66, 1),//Color.fromRGBO(169, 167, 167, 1),//
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 3,
+                        backgroundColor: Colors.black,
+                        padding: const EdgeInsets.all(15),
+                        shadowColor: const Color.fromRGBO(255, 189, 66, 1),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomRight: Radius.circular(5), topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+                          side: BorderSide(
+                              width: 2.0,
+                              color: Color.fromRGBO(255, 189, 66, 0.558),//Color.fromRGBO(169, 167, 167, 1),//
                           ),
                         ),
-                        onPressed: () {
-    
-                          //isSpeaking ? stop() : speak(scannedText);
-                        
-                        },
-                        child: const Icon(Icons.transcribe_outlined,
-                            color: Color.fromRGBO(255, 189, 66, 1), size: 30.0),
                       ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 3,
-                          backgroundColor: Colors.black,
-                          padding: const EdgeInsets.all(15),
-                          shadowColor: const Color.fromRGBO(255, 189, 66, 1),
-                          shape: const CircleBorder(
-                            side: BorderSide(
-                                width: 1.8,
-                                color: Color.fromRGBO(255, 189, 66, 0.3)),
-                          ),
+                      onPressed: () {
+                      
+                        //isSpeaking ? stop() : speak(scannedText);
+                      
+                      },
+                      child: const Icon(
+                          Icons.transcribe_outlined,
+                          color: Color.fromRGBO(255, 189, 66, 1), //Color.fromRGBO(255, 252, 252, 1),//
+                          size: 25.0
                         ),
-                        onPressed: () => {
-                          /*
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TranslatePage(scannedText: scannedText),
-                            ),
-                          )
-                          */
-                        },
-                        child: const Icon(Icons.translate,
-                            color: Color.fromRGBO(255, 189, 66, 1), size: 30.0),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 3,
-                          backgroundColor: Colors.black,
-                          padding: const EdgeInsets.all(15),
-                          shadowColor: const Color.fromRGBO(255, 189, 66, 1),
-                          shape: const CircleBorder(
-                            side: BorderSide(
-                                width: 1.8,
-                                color: Color.fromRGBO(255, 189, 66, 0.3)),
-                          ),
-                        ),
-                        onPressed: () => {},
-                        child: const Icon(Icons.text_snippet_outlined,
-                            color: Color.fromRGBO(255, 189, 66, 1), size: 30.0),
-                      ),
-                    ],
+                    ),
                   ),
+
+                  PhysicalModel(
+                    elevation: 12.0,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomRight: Radius.circular(5), topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+                    color: Colors.transparent,
+                    shadowColor: const Color.fromRGBO(255, 189, 66, 1),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 3,
+                        backgroundColor: Colors.black,
+                        padding: const EdgeInsets.all(15),
+                        shadowColor: const Color.fromRGBO(255, 189, 66, 1),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomRight: Radius.circular(5), topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+                          side: BorderSide(
+                              width: 2.0,
+                              color: Color.fromRGBO(255, 189, 66, 0.558)),
+                        ),
+                      ),
+                      onPressed: () => {
+                        /*
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TranslatePage(scannedText: scannedText),
+                          ),
+                        )
+                        */
+                      },
+                      child: const Icon(Icons.translate,
+                          color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
+                    ),
+                  ),
+
+
+                  PhysicalModel(
+                    elevation: 12.0,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomRight: Radius.circular(5), topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+                    color: Colors.transparent,
+                    shadowColor: const Color.fromRGBO(255, 189, 66, 1),
     
-                  // sizedbox for UI design
-                  SizedBox(height: 30.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 3,
+                        backgroundColor: Colors.black,
+                        padding: const EdgeInsets.all(15),
+                        shadowColor: const Color.fromRGBO(255, 189, 66, 1),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomRight: Radius.circular(5), topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+                          side: BorderSide(
+                              width: 2.0,
+                              color: Color.fromRGBO(255, 189, 66, 0.558)),
+                        ),
+                      ),
+                      onPressed: () => {},
+                      child: const Icon(Icons.text_snippet_outlined,
+                          color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
+                    ),
+                  ),
+                ],
+              ),
     
-                  // for text below..
-                  outputString.isNotEmpty ? SizedBox(
-                    width: 230,
-                    child: TextField(
-                      controller: controller,
+              // sizedbox for UI design
+              SizedBox(height: 20.0),
+    
+              // for text below..
+              outputString.isNotEmpty ? Expanded(
+                child: SizedBox(
+                  width: 280,
+                  child: Scrollbar(
+                    isAlwaysShown: true,
+                    controller: _scrollController,
+                    child: TextFormField(
+                      initialValue: outputString,
+                      scrollController: _scrollController,
+                      keyboardType: TextInputType.multiline,
                       onChanged: (value) {
-                        outputString = value;
+                        setState(() {
+                          outputString = value;  
+                        });
                       },
                       style: TextStyle(color: Colors.white),
                       maxLines: null,
                       decoration: InputDecoration(
-                        border: InputBorder.none,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(255, 189, 66, 0.7), width: 2)),
+                        enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(255, 189, 66, 0.2), width: 2)),
                         hintText: '',
                       ),
                     ),
-                  ) : Text("No text detected"),
-                ],
-              ),
-            ),
+                  ),
+                ),
+              ) : Text("No text detected"),
+
+              SizedBox(height: 20.0),
+
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 3,
+                    backgroundColor: Colors.black,
+                    padding: const EdgeInsets.all(15),
+                    shadowColor: const Color.fromRGBO(255, 189, 66, 1),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      side: BorderSide(
+                          width: 2.0,
+                          color: Color.fromRGBO(255, 189, 66, 0.558)),
+                    ),
+                  ),
+                  onPressed: () async{
+                    await Clipboard.setData(ClipboardData(text: outputString));
+                  },
+                  child: const Text("Copy to Clipboard", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 14.0)),
+                ),
+              
+            ],
           ),
         ),
       ),
