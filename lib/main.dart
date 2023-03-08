@@ -567,7 +567,7 @@ class _ImageScreenState extends State<ImageScreen> {
               Container(
                 color: Colors.black,
                 height: height - (height / 9),
-                child: Image.file(imgShow, fit: imgShow != widget.img ?  BoxFit.contain : BoxFit.fill),
+                child: Image.file(imgShow, fit: imgShow != widget.img || widget.isGallery == true?  BoxFit.contain : BoxFit.fill),
               ),
 
               Container(
@@ -591,7 +591,7 @@ class _ImageScreenState extends State<ImageScreen> {
                         padding: EdgeInsets.all(15.0),
                       ),
                       onPressed: _selectRegion,
-                      child: Icon(Icons.crop, color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
+                      child: Image.asset('assets/icons/crop-region.png', scale: 4.3, color: Color.fromRGBO(255, 189, 66, 1)),//Icon(Icons.crop, color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
                       //label: Text("Get Regions"),
                     ),
                     
@@ -604,7 +604,7 @@ class _ImageScreenState extends State<ImageScreen> {
                           backgroundColor: Colors.black,
                           shadowColor: Color.fromRGBO(255, 189, 66, 1),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            borderRadius: BorderRadius.only(topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
                             side: BorderSide(width: 2.0, color: Color.fromRGBO(255, 189, 66, 0.358)),
                           ),
                           padding: EdgeInsets.all(15.0),
@@ -619,13 +619,15 @@ class _ImageScreenState extends State<ImageScreen> {
                             currLang = langs[currLangIndex];
                           });
                         },
-                        child: Row(
+                        child:
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(Icons.translate, color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
+                            currLang == "Latin" ? Image.asset('assets/icons/lat_logo.png', scale: 5.0, color: Color.fromRGBO(255, 189, 66, 1)) : currLang == "Devanagari" ? Image.asset('assets/icons/hin_logo.png', scale: 4.9, color: Color.fromRGBO(255, 189, 66, 1)) : currLang == "Japanese" ? Image.asset('assets/icons/jpn_logo.png', scale: 5.0, color: Color.fromRGBO(255, 189, 66, 1)) : currLang == "Korean" ? Image.asset('assets/icons/kor_logo.png', scale: 5.0, color: Color.fromRGBO(255, 189, 66, 1)) : Image.asset('assets/icons/lat_logo.png', scale: 5.0, color: Color.fromRGBO(255, 189, 66, 1)),
+                            //Icon(Icons.translate, color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
                             SizedBox(width: 10.0),
-                            Text(currLang, style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)),
+                            currLang == "Latin" ? const Text("EN", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : currLang == "Devanagari" ? const Text(" HI", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : currLang == "Japanese" ? const Text("JP", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : currLang == "Korean" ? const Text("KR", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : const Text(""),
                           ],
                         ),
                     ),
@@ -636,12 +638,15 @@ class _ImageScreenState extends State<ImageScreen> {
                         style: ElevatedButton.styleFrom(
                           elevation: 12.0,
                           backgroundColor: Colors.black,
-                          shadowColor: Color.fromRGBO(255, 189, 66, 1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
-                            side: BorderSide(width: 2.0, color: Color.fromRGBO(255, 189, 66, 0.358)),
+                          shadowColor: const Color.fromRGBO(255, 189, 66, 1),
+                          //backgroundColor: Color.fromRGBO(212, 182, 9, 0.903),
+                          shape: const CircleBorder(
+                            side: BorderSide(
+                              width: 2.0, 
+                              color: Color.fromRGBO(255, 189, 66, 0.358)
+                            )
                           ),
-                          padding: EdgeInsets.all(15.0),
+                          padding: EdgeInsets.all(13.0),
                         ),
                         onPressed: () async {
 
@@ -660,7 +665,8 @@ class _ImageScreenState extends State<ImageScreen> {
                             builder: (context) => outputModal(outputString),
                           ); 
                         },
-                        child: Row(
+                        child: Image.asset('assets/icons/detect-text.png', scale: 3.8, color: Color.fromRGBO(255, 189, 66, 1)) 
+                        /*Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -668,7 +674,7 @@ class _ImageScreenState extends State<ImageScreen> {
                             SizedBox(width: 10.0),
                             Text("Detect", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)),
                           ],
-                        ),
+                        ),*/
                     ),
                     
                   ],
@@ -863,22 +869,24 @@ class _ImageScreenState extends State<ImageScreen> {
                   child: Scrollbar(
                     isAlwaysShown: true,
                     controller: _scrollController,
-                    child: TextFormField(
-                      initialValue: outputString,
-                      scrollController: _scrollController,
-                      keyboardType: TextInputType.multiline,
-                      onChanged: (value) {
-                        setState(() {
-                          outputString = value;  
-                        });
-                      },
-                      style: TextStyle(color: Colors.white),
-                      maxLines: null,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
-                        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(255, 189, 66, 0.7), width: 2)),
-                        enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(255, 189, 66, 0.2), width: 2)),
-                        hintText: '',
+                    child: Center(
+                      child: TextFormField(
+                        initialValue: outputString,
+                        scrollController: _scrollController,
+                        keyboardType: TextInputType.multiline,
+                        onChanged: (value) {
+                          setState(() {
+                            outputString = value;  
+                          });
+                        },
+                        style: TextStyle(color: Colors.white),
+                        maxLines: null,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(255, 189, 66, 0.7), width: 2)),
+                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(255, 189, 66, 0.2), width: 2)),
+                          hintText: '',
+                        ),
                       ),
                     ),
                   ),
