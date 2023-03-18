@@ -98,6 +98,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:readaloud_v2/main.dart';
 
+import '../InitApp.dart';
+
 
 class AnimatedIconButton extends StatefulWidget {
   final String firstImage;
