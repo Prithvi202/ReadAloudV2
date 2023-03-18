@@ -113,7 +113,7 @@ class AnimatedIconButton extends StatefulWidget {
   // added so that we can have empty function as default value;
   static void _blankFunc() {}
 
-  AnimatedIconButton({
+  const AnimatedIconButton({
     Key? key,
     required this.firstImage,
     required this.secondImage,
@@ -126,10 +126,10 @@ class AnimatedIconButton extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AnimatedIconButtonState createState() => _AnimatedIconButtonState();
+  AnimatedIconButtonState createState() => AnimatedIconButtonState();
 }
 
-class _AnimatedIconButtonState extends State<AnimatedIconButton>
+class AnimatedIconButtonState extends State<AnimatedIconButton>
     with SingleTickerProviderStateMixin {
   bool _showFirstImage = true;
   late AnimationController _controller;
@@ -158,7 +158,7 @@ class _AnimatedIconButtonState extends State<AnimatedIconButton>
     _opacityAnimation = Tween<double>(begin: 1, end: 0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Interval(0.0, 0.5),
+        curve: const Interval(0.0, 0.5),
       ),
     );
   }

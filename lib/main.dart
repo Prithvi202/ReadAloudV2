@@ -1,9 +1,10 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:readaloud_v2/utils/animatedcapture.dart';
@@ -105,7 +106,9 @@ class _InitAppState extends State<InitApp> {
       final imgPath = img.path;
       //Navigator.of(context).push(MaterialPageRoute(builder: (_) => PreviewScreen(imagePath: imgPath));
     } catch (e) {
-      print("Some error occured while taking pic! $e");
+      if (kDebugMode) {
+        print("Some error occurred while taking pic! $e");
+      }
     }
   }
 
@@ -122,7 +125,9 @@ class _InitAppState extends State<InitApp> {
       double yp = y / cameraHeight;
 
       Offset point = Offset(xp,yp);
-      print("point : $point");
+      if (kDebugMode) {
+        print("point : $point");
+      }
 
       // Manually focus
       await _controller.setFocusPoint(point);
@@ -147,7 +152,7 @@ class _InitAppState extends State<InitApp> {
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text("ReadAloud V2"),
+        title: const Text("ReadAloud V2"),
         centerTitle: true,
         backgroundColor: Colors.black26,
       ),
@@ -187,7 +192,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
   bool flashOn = false;
   //double value = 50;
 
-  double _minExposureOffset = -2.0, _maxExposureOffset = 2.0;
+  final double _minExposureOffset = -2.0, _maxExposureOffset = 2.0;
   late double _currentExposureOffset = 0.0;
 
   void toggleFlash()
@@ -217,11 +222,11 @@ class _PreviewScreenState extends State<PreviewScreen> {
           height: height,
           color: Colors.black,//Colors.red,
           child: Container(
-              margin: EdgeInsets.only(bottom: 90),
+              margin: const EdgeInsets.only(bottom: 90),
               width: width,
               height: height - (height / 7),
               child: ClipRRect(
-                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
+                borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
                   child: CameraPreview(widget.controller)
               ),
           ),
@@ -230,7 +235,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
         Container(
           color: Colors.transparent,
           height: height / 10,
-          margin: EdgeInsets.only(bottom: 100.0),
+          margin: const EdgeInsets.only(bottom: 100.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -240,7 +245,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
 
-                  Icon(Icons.wb_sunny_outlined, size: 20, color: Colors.white),
+                  const Icon(Icons.wb_sunny_outlined, size: 20, color: Colors.white),
 
                   SliderTheme(
                     data: SliderThemeData(
@@ -250,24 +255,26 @@ class _PreviewScreenState extends State<PreviewScreen> {
                       thumbColor: Colors.white,
                       minThumbSeparation: 10,
                       inactiveTickMarkColor: Colors.white.withOpacity(0.3),
-                      thumbShape: RoundSliderThumbShape(pressedElevation: 0, enabledThumbRadius: 3, elevation: 0),
+                      thumbShape: const RoundSliderThumbShape(pressedElevation: 0, enabledThumbRadius: 3, elevation: 0),
                     ),
                     child: Slider(
                       min: _minExposureOffset,
                       max: _maxExposureOffset,
                       value: _currentExposureOffset, 
                       divisions: 16,
-                      onChanged: (_currentExposureOffset) {
+                      onChanged: (currentExposureOffset) {
                         setState(() {
-                          this._currentExposureOffset = _currentExposureOffset;
-                          print(_currentExposureOffset.toStringAsFixed(2));
-                          widget.controller.setExposureOffset(_currentExposureOffset);
+                          _currentExposureOffset = currentExposureOffset;
+                          if (kDebugMode) {
+                            print(currentExposureOffset.toStringAsFixed(2));
+                          }
+                          widget.controller.setExposureOffset(currentExposureOffset);
                         });
                       },
                     ),
                   ),
 
-                  Text(_currentExposureOffset >= 0 ? "+ ${_currentExposureOffset.toStringAsFixed(2)}" : "- ${_currentExposureOffset.abs().toStringAsFixed(2)}", style: TextStyle(color: Colors.white, fontSize: 15.0)),
+                  Text(_currentExposureOffset >= 0 ? "+ ${_currentExposureOffset.toStringAsFixed(2)}" : "- ${_currentExposureOffset.abs().toStringAsFixed(2)}", style: const TextStyle(color: Colors.white, fontSize: 15.0)),
 
                 ],
               ),
@@ -276,9 +283,9 @@ class _PreviewScreenState extends State<PreviewScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(Icons.zoom_in, color: Colors.white, size: 18.0),
-                  SizedBox(width: 5.0),
-                  Text("${widget.zoomLevel.toStringAsFixed(2)}x", style: TextStyle(fontSize: 13.0, color: Colors.white)),
+                  const Icon(Icons.zoom_in, color: Colors.white, size: 18.0),
+                  const SizedBox(width: 5.0),
+                  Text("${widget.zoomLevel.toStringAsFixed(2)}x", style: const TextStyle(fontSize: 13.0, color: Colors.white)),
                 ],
               ),
 
@@ -289,12 +296,11 @@ class _PreviewScreenState extends State<PreviewScreen> {
         Container(
           alignment: Alignment.bottomCenter,
           height: height / 9,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             //color: Colors.red,
             //borderRadius: BorderRadius.only(topLeft: Radius.circular(100), topRight: Radius.circular(100)),
           ),
           child: Container(
-            //color: Colors.black38,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -320,7 +326,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                     AnimatedIconButton(
                       firstImage: 'assets/icons/initIcon.png',
                       secondImage: 'assets/icons/endIcon.png',
-                      duration: Duration(milliseconds: 300),
+                      duration: const Duration(milliseconds: 300),
                       color: Colors.white,
                       audio: 'audio/capture_click.mp3',
                       cameraController: widget.controller,
@@ -331,7 +337,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                           widget.controller.setFlashMode(FlashMode.off);
                           if (flashOn) flashOn = !flashOn;
                         });
-                        
+
                       },
                     ),
 
@@ -343,7 +349,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                   ],
                 ),
 
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
 
                 // bottom-row
                 /*
@@ -470,7 +476,9 @@ class _ImageScreenState extends State<ImageScreen> {
           }
           imgShow = File(croppedImg.path);
         });
-        print("Region Added");
+        if (kDebugMode) {
+          print("Region Added");
+        }
     }
   }
 
@@ -478,21 +486,29 @@ class _ImageScreenState extends State<ImageScreen> {
   {
 
     TextRecognitionScript lang;
-    print(currLang);
-    if (currLang == "Latin")  lang = TextRecognitionScript.latin;
-    else if (currLang == "Devanagari")  lang = TextRecognitionScript.devanagiri;
-    else if (currLang == "Japanese")  lang = TextRecognitionScript.japanese;
-    else if (currLang == "Korean")  lang = TextRecognitionScript.korean;
-    else lang = TextRecognitionScript.latin;
+    if (kDebugMode) {
+      print(currLang);
+    }
+    if (currLang == "Latin") {
+      lang = TextRecognitionScript.latin;
+    } else if (currLang == "Devanagari") {
+      lang = TextRecognitionScript.devanagiri;
+    } else if (currLang == "Japanese") {
+      lang = TextRecognitionScript.japanese;
+    } else if (currLang == "Korean") {
+      lang = TextRecognitionScript.korean;
+    } else {
+      lang = TextRecognitionScript.latin;
+    }
 
     // main logic
     var inputImg = InputImage.fromFile(image);
-    var textDetector = GoogleMlKit.vision.textRecognizer(script: lang);
-    RecognizedText recog_string = await textDetector.processImage(inputImg);
+    var textDetector = TextRecognizer(script: lang);
+    RecognizedText recogString = await textDetector.processImage(inputImg);
     await textDetector.close();
 
     String scannedText = "";
-    for (TextBlock block in recog_string.blocks)
+    for (TextBlock block in recogString.blocks)
     {
       for (TextLine line in block.lines)
       {
@@ -545,7 +561,7 @@ class _ImageScreenState extends State<ImageScreen> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text("Preview Screen", style: TextStyle(color: Colors.white)),
+        title: const Text("Preview Screen", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.black45,
         centerTitle: true,
         actions: [
@@ -553,7 +569,7 @@ class _ImageScreenState extends State<ImageScreen> {
               onPressed: () {
                 setState(() {imgShow = widget.img;});
               },
-              icon: Icon(Icons.replay, color: Colors.white)
+              icon: const Icon(Icons.replay, color: Colors.white)
           )
         ],
       ),
@@ -571,7 +587,7 @@ class _ImageScreenState extends State<ImageScreen> {
               ),
 
               Container(
-                margin: EdgeInsets.only(bottom: 10),
+                margin: const EdgeInsets.only(bottom: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -588,26 +604,26 @@ class _ImageScreenState extends State<ImageScreen> {
                             color: Color.fromRGBO(255, 189, 66, 0.358)
                           )
                         ),
-                        padding: EdgeInsets.all(15.0),
+                        padding: const EdgeInsets.all(15.0),
                       ),
                       onPressed: _selectRegion,
-                      child: Image.asset('assets/icons/crop-region.png', scale: 4.3, color: Color.fromRGBO(255, 189, 66, 1)),//Icon(Icons.crop, color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
+                      child: Image.asset('assets/icons/crop-region.png', scale: 4.3, color: const Color.fromRGBO(255, 189, 66, 1)),//Icon(Icons.crop, color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
                       //label: Text("Get Regions"),
                     ),
-                    
-                    SizedBox(width: 20),
+
+                    const SizedBox(width: 20),
 
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           //backgroundColor: Color.fromRGBO(212, 182, 9, 0.903),
                           elevation: 12.0,
                           backgroundColor: Colors.black,
-                          shadowColor: Color.fromRGBO(255, 189, 66, 1),
-                          shape: RoundedRectangleBorder(
+                          shadowColor: const Color.fromRGBO(255, 189, 66, 1),
+                          shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
                             side: BorderSide(width: 2.0, color: Color.fromRGBO(255, 189, 66, 0.358)),
                           ),
-                          padding: EdgeInsets.all(15.0),
+                          padding: const EdgeInsets.all(15.0),
                         ),
                         onPressed: () {
                           setState(() {
@@ -624,15 +640,15 @@ class _ImageScreenState extends State<ImageScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            currLang == "Latin" ? Image.asset('assets/icons/lat_logo.png', scale: 5.0, color: Color.fromRGBO(255, 189, 66, 1)) : currLang == "Devanagari" ? Image.asset('assets/icons/hin_logo.png', scale: 4.9, color: Color.fromRGBO(255, 189, 66, 1)) : currLang == "Japanese" ? Image.asset('assets/icons/jpn_logo.png', scale: 5.0, color: Color.fromRGBO(255, 189, 66, 1)) : currLang == "Korean" ? Image.asset('assets/icons/kor_logo.png', scale: 5.0, color: Color.fromRGBO(255, 189, 66, 1)) : Image.asset('assets/icons/lat_logo.png', scale: 5.0, color: Color.fromRGBO(255, 189, 66, 1)),
+                            currLang == "Latin" ? Image.asset('assets/icons/lat_logo.png', scale: 5.0, color: const Color.fromRGBO(255, 189, 66, 1)) : currLang == "Devanagari" ? Image.asset('assets/icons/hin_logo.png', scale: 4.9, color: const Color.fromRGBO(255, 189, 66, 1)) : currLang == "Japanese" ? Image.asset('assets/icons/jpn_logo.png', scale: 5.0, color: const Color.fromRGBO(255, 189, 66, 1)) : currLang == "Korean" ? Image.asset('assets/icons/kor_logo.png', scale: 5.0, color: const Color.fromRGBO(255, 189, 66, 1)) : Image.asset('assets/icons/lat_logo.png', scale: 5.0, color: const Color.fromRGBO(255, 189, 66, 1)),
                             //Icon(Icons.translate, color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
-                            SizedBox(width: 10.0),
+                            const SizedBox(width: 10.0),
                             currLang == "Latin" ? const Text("EN", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : currLang == "Devanagari" ? const Text(" HI", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : currLang == "Japanese" ? const Text("JP", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : currLang == "Korean" ? const Text("KR", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : const Text(""),
                           ],
                         ),
                     ),
 
-                    SizedBox(width: 20),
+                    const SizedBox(width: 20),
 
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -646,7 +662,7 @@ class _ImageScreenState extends State<ImageScreen> {
                               color: Color.fromRGBO(255, 189, 66, 0.358)
                             )
                           ),
-                          padding: EdgeInsets.all(13.0),
+                          padding: const EdgeInsets.all(13.0),
                         ),
                         onPressed: () async {
 
@@ -665,7 +681,7 @@ class _ImageScreenState extends State<ImageScreen> {
                             builder: (context) => outputModal(outputString),
                           ); 
                         },
-                        child: Image.asset('assets/icons/detect-text.png', scale: 3.8, color: Color.fromRGBO(255, 189, 66, 1)) 
+                        child: Image.asset('assets/icons/detect-text.png', scale: 3.8, color: const Color.fromRGBO(255, 189, 66, 1))
                         /*Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -683,13 +699,13 @@ class _ImageScreenState extends State<ImageScreen> {
             ]
           ),
 
-          Container(
+          SizedBox(
             height: 80,
             child: Center(
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
-                padding: EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.symmetric(vertical: 15),
                 itemCount: regions.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
@@ -701,7 +717,7 @@ class _ImageScreenState extends State<ImageScreen> {
                         child: Column(
                           children: [
                             Icon(Icons.aspect_ratio_outlined, size: 30.0, color: Colors.white.withOpacity(0.7)),
-                            SizedBox(height: 0),
+                            const SizedBox(height: 0),
                             Text("R$index", style: TextStyle(fontSize: 12.0, color: Colors.white.withOpacity(0.3))),
                           ],
                         ),
@@ -750,13 +766,13 @@ class _ImageScreenState extends State<ImageScreen> {
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
         height: 400,
-        padding: EdgeInsets.only(top: 20, bottom: 20, left: 20, right: 20),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.only(top: 20, bottom: 20, left: 20, right: 20),
+        decoration: const BoxDecoration(
           color: Color.fromRGBO(20, 20, 20, 1),
           borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
         ),
         child: DefaultTextStyle(
-          style: TextStyle(color: Colors.white, fontSize: 18.0),
+          style: const TextStyle(color: Colors.white, fontSize: 18.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -768,7 +784,7 @@ class _ImageScreenState extends State<ImageScreen> {
             children: [
                   PhysicalModel(
                     elevation: 12.0,
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomRight: Radius.circular(5), topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(5), bottomRight: Radius.circular(5), topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
                     color: Colors.transparent,//const Color.fromRGBO(255, 189, 66, 1),
                     shadowColor: const Color.fromRGBO(255, 189, 66, 1),//Color.fromRGBO(169, 167, 167, 1),//
                     child: ElevatedButton(
@@ -800,7 +816,7 @@ class _ImageScreenState extends State<ImageScreen> {
 
                   PhysicalModel(
                     elevation: 12.0,
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomRight: Radius.circular(5), topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(5), bottomRight: Radius.circular(5), topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
                     color: Colors.transparent,
                     shadowColor: const Color.fromRGBO(255, 189, 66, 1),
                     child: ElevatedButton(
@@ -834,7 +850,7 @@ class _ImageScreenState extends State<ImageScreen> {
 
                   PhysicalModel(
                     elevation: 12.0,
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomRight: Radius.circular(5), topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(5), bottomRight: Radius.circular(5), topRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
                     color: Colors.transparent,
                     shadowColor: const Color.fromRGBO(255, 189, 66, 1),
     
@@ -860,14 +876,14 @@ class _ImageScreenState extends State<ImageScreen> {
               ),
     
               // sizedbox for UI design
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
     
               // for text below..
               outputString.isNotEmpty ? Expanded(
                 child: SizedBox(
                   width: 280,
                   child: Scrollbar(
-                    isAlwaysShown: true,
+                    thumbVisibility: true,
                     controller: _scrollController,
                     child: Center(
                       child: TextFormField(
@@ -879,21 +895,21 @@ class _ImageScreenState extends State<ImageScreen> {
                             outputString = value;  
                           });
                         },
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                         maxLines: null,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
-                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(255, 189, 66, 0.7), width: 2)),
-                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(255, 189, 66, 0.2), width: 2)),
+                          focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(255, 189, 66, 0.7), width: 2)),
+                          enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(255, 189, 66, 0.2), width: 2)),
                           hintText: '',
                         ),
                       ),
                     ),
                   ),
                 ),
-              ) : Text("No text detected"),
+              ) : const Text("No text detected"),
 
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
 
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
