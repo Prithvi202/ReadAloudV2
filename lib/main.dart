@@ -107,7 +107,7 @@ class _InitAppState extends State<InitApp> {
       //Navigator.of(context).push(MaterialPageRoute(builder: (_) => PreviewScreen(imagePath: imgPath));
     } catch (e) {
       if (kDebugMode) {
-        print("Some error occurred while taking pic! $e");
+        print('Some error occurred while taking pic! $e');
       }
     }
   }
@@ -126,7 +126,7 @@ class _InitAppState extends State<InitApp> {
 
       Offset point = Offset(xp,yp);
       if (kDebugMode) {
-        print("point : $point");
+        print('point : $point');
       }
 
       // Manually focus
@@ -152,7 +152,7 @@ class _InitAppState extends State<InitApp> {
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text("ReadAloud V2"),
+        title: const Text('ReadAloud V2'),
         centerTitle: true,
         backgroundColor: Colors.black26,
       ),
@@ -274,7 +274,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                     ),
                   ),
 
-                  Text(_currentExposureOffset >= 0 ? "+ ${_currentExposureOffset.toStringAsFixed(2)}" : "- ${_currentExposureOffset.abs().toStringAsFixed(2)}", style: const TextStyle(color: Colors.white, fontSize: 15.0)),
+                  Text(_currentExposureOffset >= 0 ? '+ ${_currentExposureOffset.toStringAsFixed(2)}' : '- ${_currentExposureOffset.abs().toStringAsFixed(2)}', style: const TextStyle(color: Colors.white, fontSize: 15.0)),
 
                 ],
               ),
@@ -285,7 +285,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                 children: [
                   const Icon(Icons.zoom_in, color: Colors.white, size: 18.0),
                   const SizedBox(width: 5.0),
-                  Text("${widget.zoomLevel.toStringAsFixed(2)}x", style: const TextStyle(fontSize: 13.0, color: Colors.white)),
+                  Text('${widget.zoomLevel.toStringAsFixed(2)}x', style: const TextStyle(fontSize: 13.0, color: Colors.white)),
                 ],
               ),
 
@@ -410,7 +410,7 @@ class _ImageScreenState extends State<ImageScreen> {
   List<String> stringFromRegion = [];
 
   // list detection language
-  List<String> langs = ["Latin", "Devanagari", "Japanese", "Korean"];
+  List<String> langs = ['Latin', 'Devanagari', 'Japanese', 'Korean'];
 
   // current detection language
   late String currLang;
@@ -477,7 +477,7 @@ class _ImageScreenState extends State<ImageScreen> {
           imgShow = File(croppedImg.path);
         });
         if (kDebugMode) {
-          print("Region Added");
+          print('Region Added');
         }
     }
   }
@@ -489,13 +489,13 @@ class _ImageScreenState extends State<ImageScreen> {
     if (kDebugMode) {
       print(currLang);
     }
-    if (currLang == "Latin") {
+    if (currLang == 'Latin') {
       lang = TextRecognitionScript.latin;
-    } else if (currLang == "Devanagari") {
+    } else if (currLang == 'Devanagari') {
       lang = TextRecognitionScript.devanagiri;
-    } else if (currLang == "Japanese") {
+    } else if (currLang == 'Japanese') {
       lang = TextRecognitionScript.japanese;
-    } else if (currLang == "Korean") {
+    } else if (currLang == 'Korean') {
       lang = TextRecognitionScript.korean;
     } else {
       lang = TextRecognitionScript.latin;
@@ -507,12 +507,12 @@ class _ImageScreenState extends State<ImageScreen> {
     RecognizedText recogString = await textDetector.processImage(inputImg);
     await textDetector.close();
 
-    String scannedText = "";
+    String scannedText = '';
     for (TextBlock block in recogString.blocks)
     {
       for (TextLine line in block.lines)
       {
-        scannedText = "$scannedText${line.text}\n";
+        scannedText = '$scannedText${line.text}\n';
       }
     }
 
@@ -561,7 +561,7 @@ class _ImageScreenState extends State<ImageScreen> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text("Preview Screen", style: TextStyle(color: Colors.white)),
+        title: const Text('Preview Screen', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.black45,
         centerTitle: true,
         actions: [
@@ -640,10 +640,10 @@ class _ImageScreenState extends State<ImageScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            currLang == "Latin" ? Image.asset('assets/icons/lat_logo.png', scale: 5.0, color: const Color.fromRGBO(255, 189, 66, 1)) : currLang == "Devanagari" ? Image.asset('assets/icons/hin_logo.png', scale: 4.9, color: const Color.fromRGBO(255, 189, 66, 1)) : currLang == "Japanese" ? Image.asset('assets/icons/jpn_logo.png', scale: 5.0, color: const Color.fromRGBO(255, 189, 66, 1)) : currLang == "Korean" ? Image.asset('assets/icons/kor_logo.png', scale: 5.0, color: const Color.fromRGBO(255, 189, 66, 1)) : Image.asset('assets/icons/lat_logo.png', scale: 5.0, color: const Color.fromRGBO(255, 189, 66, 1)),
+                            currLang == 'Latin' ? Image.asset('assets/icons/lat_logo.png', scale: 5.0, color: const Color.fromRGBO(255, 189, 66, 1)) : currLang == 'Devanagari' ? Image.asset('assets/icons/hin_logo.png', scale: 4.9, color: const Color.fromRGBO(255, 189, 66, 1)) : currLang == 'Japanese' ? Image.asset('assets/icons/jpn_logo.png', scale: 5.0, color: const Color.fromRGBO(255, 189, 66, 1)) : currLang == 'Korean' ? Image.asset('assets/icons/kor_logo.png', scale: 5.0, color: const Color.fromRGBO(255, 189, 66, 1)) : Image.asset('assets/icons/lat_logo.png', scale: 5.0, color: const Color.fromRGBO(255, 189, 66, 1)),
                             //Icon(Icons.translate, color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
                             const SizedBox(width: 10.0),
-                            currLang == "Latin" ? const Text("EN", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : currLang == "Devanagari" ? const Text(" HI", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : currLang == "Japanese" ? const Text("JP", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : currLang == "Korean" ? const Text("KR", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : const Text(""),
+                            currLang == 'Latin' ? const Text('EN', style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : currLang == 'Devanagari' ? const Text(' HI', style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : currLang == 'Japanese' ? const Text('JP', style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : currLang == 'Korean' ? const Text('KR', style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 15.0)) : const Text(''),
                           ],
                         ),
                     ),
@@ -666,7 +666,7 @@ class _ImageScreenState extends State<ImageScreen> {
                         ),
                         onPressed: () async {
 
-                          String outputString = "";
+                          String outputString = '';
                           for (int i=0; i<regions.length; i++)
                           {
                             outputString += await getTextFromImage(regions[i]);
@@ -718,7 +718,7 @@ class _ImageScreenState extends State<ImageScreen> {
                           children: [
                             Icon(Icons.aspect_ratio_outlined, size: 30.0, color: Colors.white.withOpacity(0.7)),
                             const SizedBox(height: 0),
-                            Text("R$index", style: TextStyle(fontSize: 12.0, color: Colors.white.withOpacity(0.3))),
+                            Text('R$index', style: TextStyle(fontSize: 12.0, color: Colors.white.withOpacity(0.3))),
                           ],
                         ),
                       ),
@@ -907,7 +907,7 @@ class _ImageScreenState extends State<ImageScreen> {
                     ),
                   ),
                 ),
-              ) : const Text("No text detected"),
+              ) : const Text('No text detected'),
 
               const SizedBox(height: 20.0),
 
@@ -927,7 +927,7 @@ class _ImageScreenState extends State<ImageScreen> {
                   onPressed: () async{
                     await Clipboard.setData(ClipboardData(text: outputString));
                   },
-                  child: const Text("Copy to Clipboard", style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 14.0)),
+                  child: const Text('Copy to Clipboard', style: TextStyle(color: Color.fromRGBO(255, 189, 66, 1), fontSize: 14.0)),
                 ),
               
             ],
