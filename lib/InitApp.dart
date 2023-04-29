@@ -122,10 +122,15 @@ class _InitAppState extends State<InitApp> {
         title: const Text('ReadAloud V2'),
         centerTitle: true,
         backgroundColor: Colors.black26,
+        leading: IconButton(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ScannerApp())), 
+            icon: Icon(Icons.picture_as_pdf_outlined)
+          ),
         actions: [
-          ElevatedButton(onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const ScannerApp()));
-          }, child: Icon(Icons.picture_as_pdf_outlined)),
+          IconButton(
+            onPressed: () { setState(() {}); }, 
+            icon: const Icon(Icons.replay_outlined),
+          )
         ],
       ),
       body: FutureBuilder<void>(
