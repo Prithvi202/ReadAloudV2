@@ -11,6 +11,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:readaloud_v2/translate_page.dart';
 import 'package:readaloud_v2/utils/animatedcapture.dart';
 
+import 'edgeDetection.dart';
+
 class InitApp extends StatefulWidget {
   final CameraDescription camera;
 
@@ -120,6 +122,11 @@ class _InitAppState extends State<InitApp> {
         title: const Text('ReadAloud V2'),
         centerTitle: true,
         backgroundColor: Colors.black26,
+        actions: [
+          ElevatedButton(onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const ScannerApp()));
+          }, child: Icon(Icons.picture_as_pdf_outlined)),
+        ],
       ),
       body: FutureBuilder<void>(
         future: _initControllerFuture,

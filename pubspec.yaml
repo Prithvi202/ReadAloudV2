@@ -46,6 +46,14 @@ dependencies:
   google_mlkit_text_recognition: ^0.5.0
   translator: ^0.1.7
 
+  edge_detection: ^1.0.5
+  path_provider:
+  permission_handler:
+  reorderable_grid_view: ^2.2.6
+  flutter_native_image: ^0.0.6+1
+  pdf: ^3.10.1
+  url_launcher:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

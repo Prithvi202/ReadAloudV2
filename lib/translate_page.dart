@@ -6,7 +6,6 @@ import 'DropdownButtonLang.dart';
 import 'InitApp.dart';
 
 // available languages
-
 List<String> totalLangs = [
   "Arabic",
   "Bengali",
