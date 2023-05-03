@@ -195,7 +195,11 @@ class _TransTextState extends State<TransText> {
 
   void translate(String text) async
   {
-    await translator.translate(widget.scannedText, from: 'en', to: chosenLang).then((output) {
+    Translation translation = await translator.translate(widget.scannedText);
+    String lanCode = translation.sourceLanguage.code;
+    print("Detected language" + lanCode);
+  
+    await translator.translate(widget.scannedText, from: lanCode, to: chosenLang).then((output) {
       setState(() {
         translated_text = output.toString();
         print(translated_text);
