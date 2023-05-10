@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:readaloud_v2/TextSumm.dart';
 import 'package:readaloud_v2/read_page.dart';
 import 'package:readaloud_v2/translate_page.dart';
 import 'package:readaloud_v2/utils/animatedcapture.dart';
@@ -834,7 +835,7 @@ class ImageScreenState extends State<ImageScreen> {
                       ),
                       onPressed: () {
                         //isSpeaking ? stop() : speak(scannedText);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ReadPage(scannedText: outputString)));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ReadPage(scannedText: outputString) ));
                       },
                       child: const Icon(Icons.transcribe_outlined,
                           color: Color.fromRGBO(255, 189, 66,
@@ -907,7 +908,9 @@ class ImageScreenState extends State<ImageScreen> {
                               color: Color.fromRGBO(255, 189, 66, 0.558)),
                         ),
                       ),
-                      onPressed: () => {},
+                      onPressed: () => {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => Textsummary(outputText: outputString) ))
+                      },
                       child: const Icon(Icons.text_snippet_outlined,
                           color: Color.fromRGBO(255, 189, 66, 1), size: 25.0),
                     ),

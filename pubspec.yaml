@@ -42,7 +42,8 @@ dependencies:
 
   audioplayers: ^3.0.1
   image_cropper: ^3.0.1
-
+  http: ^0.13.6
+  convert: ^3.1.1
   google_mlkit_text_recognition: ^0.5.0
   translator: ^0.1.7
   flutter_tts: ^3.6.3
